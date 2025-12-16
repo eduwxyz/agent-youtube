@@ -1,0 +1,13 @@
+1. Ter acesso a API do youtube para fazer upload
+2. Gerar titulo - OK
+3. Gerar descrição - OK
+4. Gerar uma thumb
+
+
+
+go:
+* Gerar titulo 
+* Gerar descrição 
+
+
+mp4 -> extract_audio -> send_model -> gera_transcrição.txt -> mando pro claude gerar o titulo e a descrição 
