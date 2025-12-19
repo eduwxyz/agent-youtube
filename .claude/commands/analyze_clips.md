@@ -52,9 +52,14 @@ Analise a transcrição e identifique os **melhores momentos para cortes** que f
    - Prefira transições naturais
    - O corte deve ser auto-contido (não precisa de contexto anterior)
 
+5. **SEM LIMITE DE DURAÇÃO**:
+   - O clip pode ter 30 segundos ou 15 minutos
+   - O que importa é o conteúdo fazer sentido COMPLETO
+   - Se uma explicação/história leva 10 minutos, inclua os 10 minutos
+   - Não corte conteúdo valioso só para caber em um tempo arbitrário
+
 ### Parâmetros:
-- Duração máxima por corte: $ARGUMENTS.duracao_max minutos (padrão: 3 minutos)
-- Quantidade máxima de cortes: $ARGUMENTS.quantidade (padrão: 5 cortes)
+- Quantidade máxima de cortes: $ARGUMENTS.quantidade (padrão: 10 cortes)
 
 ## Formato de saída OBRIGATÓRIO:
 
@@ -88,5 +93,20 @@ Para cada corte identificado, retorne no formato JSON:
 3. Priorize qualidade sobre quantidade - se houver poucos bons momentos, retorne menos cortes
 4. O título sugerido deve seguir as mesmas regras de títulos virais (max 60 chars, gatilhos mentais)
 5. Ordene os cortes do MELHOR para o pior (por potencial viral)
+
+## Após a análise:
+
+1. **Salve o JSON** em `clips.json` na raiz do projeto
+2. **Extraia os clips** automaticamente usando:
+   ```bash
+   # Linux:
+   ./venv/bin/python .claude/skills/youtube-video-pipeline/scripts/extract_clip.py VIDEO.mp4 --clips clips.json
+
+   # macOS:
+   python .claude/skills/youtube-video-pipeline/scripts/extract_clip.py VIDEO.mp4 --clips clips.json
+   ```
+   (substitua VIDEO.mp4 pelo arquivo de vídeo correspondente à transcrição)
+
+**IMPORTANTE:** O Claude Code faz a análise diretamente. NÃO use o script analyze_clips.py (que usa Gemini).
 
 Analise agora a transcrição e identifique os melhores cortes.

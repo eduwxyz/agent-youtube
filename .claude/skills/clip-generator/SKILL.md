@@ -5,12 +5,11 @@ description: "Gera clips/cortes automáticos a partir de vídeos MP4 usando IA p
 
 # Clip Generator
 
-Identifica automaticamente os melhores momentos de um vídeo para criar clips virais usando análise de transcrição com IA.
+Identifica automaticamente os melhores momentos de um vídeo para criar clips virais. **O Claude Code faz a análise diretamente** (NÃO usa Gemini).
 
 ## Dependências
 
 - **ffmpeg**: Para extração dos clips
-- **Google GenAI**: `pip install google-genai python-dotenv`
 - **Transcrição**: Usar youtube-video-pipeline para transcrever se necessário
 
 ## Ambiente Virtual (venv) no Linux
@@ -45,26 +44,29 @@ python .claude/skills/youtube-video-pipeline/scripts/transcribe_audio.py video.m
 
 A flag `-t` inclui timestamps (recomendado para precisão).
 
-### Passo 2: Analisar Clips
+### Passo 2: Analisar Clips (Claude Code faz diretamente)
 
-```bash
-# Linux (com venv):
-./venv/bin/python .claude/skills/clip-generator/scripts/analyze_clips.py video_transcricao.txt -o clips.json
+**IMPORTANTE: NÃO usar o script analyze_clips.py (que usa Gemini). O Claude Code deve analisar diretamente.**
 
-# macOS:
-python .claude/skills/clip-generator/scripts/analyze_clips.py video_transcricao.txt -o clips.json
-```
+1. Ler o arquivo de transcrição com timestamps
+2. Analisar o conteúdo identificando os melhores momentos para clips virais
+3. Gerar o JSON no formato especificado abaixo
+4. Salvar em `clips.json`
 
-Opções:
-- `-n, --max-clips <num>`: Número máximo de clips (padrão: 5)
-- `-o, --output <arquivo>`: Salvar JSON com clips identificados
+**Critérios para identificar bons clips:**
+- **Quotes impactantes**: Frases memoráveis, provocativas ou inspiradoras
+- **Insights únicos**: Momentos de revelação ou aprendizado valioso
+- **Emoção**: Humor, surpresa, indignação, motivação
+- **Histórias completas**: Mini-narrativas com início, meio e fim
+- **Ganchos fortes**: Momentos que capturam atenção imediatamente
 
-O script identifica momentos com:
-- Quotes impactantes e memoráveis
-- Insights únicos e revelações
-- Momentos de emoção (humor, surpresa, motivação)
-- Mini-histórias com início, meio e fim
-- Ganchos fortes para capturar atenção
+**Regras:**
+- **SEM LIMITE DE DURAÇÃO** - o clip pode ter 30 segundos ou 15 minutos, o que importa é o conteúdo fazer sentido completo
+- O clip deve começar com um gancho forte (não no meio de uma frase)
+- O clip deve ter um encerramento natural (conclusão da ideia)
+- Priorize momentos que fazem sentido isolados (sem contexto externo)
+- Use os timestamps EXATOS da transcrição
+- Se um tema/explicação leva 10 minutos mas é valioso, inclua os 10 minutos completos
 
 ### Passo 3: Extrair Clips
 
