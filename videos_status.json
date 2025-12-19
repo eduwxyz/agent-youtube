@@ -56,14 +56,14 @@
     {
       "id": "clip_06",
       "file_path": "clips/06_Como_automatizei_MEU_CANAL_com_IA_Projeto_Completo.mp4",
-      "title": "Como automatizei MEU CANAL com IA - Projeto Completo",
-      "status": "ready",
-      "has_thumbnail": false,
+      "title": "Automatizei MEU CANAL do YouTube com IA (projeto completo)",
+      "status": "scheduled",
+      "has_thumbnail": true,
       "has_transcription": false,
       "has_description": false,
-      "published_at": null,
-      "scheduled_at": null,
-      "youtube_url": null,
+      "published_at": "2025-12-19",
+      "scheduled_at": "2025-12-22",
+      "youtube_url": "https://www.youtube.com/watch?v=mzXLjDbBYgU",
       "notes": ""
     },
     {

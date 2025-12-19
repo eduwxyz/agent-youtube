@@ -35,7 +35,7 @@ TOKEN_FILE = 'token.json'
 STATUS_FILE = Path(__file__).parent.parent.parent.parent.parent / 'videos_status.json'
 
 
-def update_video_status(video_file: str, youtube_url: str, title: str = None, has_thumbnail: bool = False):
+def update_video_status(video_file: str, youtube_url: str, title: str = None, has_thumbnail: bool = False, scheduled_at: str = None):
     """
     Atualiza o status do vídeo no videos_status.json após upload.
 
@@ -44,6 +44,7 @@ def update_video_status(video_file: str, youtube_url: str, title: str = None, ha
         youtube_url: URL do vídeo no YouTube
         title: Título do vídeo (opcional)
         has_thumbnail: Se thumbnail foi enviada
+        scheduled_at: Data de agendamento (se for upload agendado)
     """
     if not STATUS_FILE.exists():
         print(f"Aviso: Arquivo de status não encontrado: {STATUS_FILE}")
@@ -57,18 +58,27 @@ def update_video_status(video_file: str, youtube_url: str, title: str = None, ha
         video_path = str(video_file)
         found = False
 
+        # Determina status baseado em se é agendado ou não
+        is_scheduled = scheduled_at is not None
+        status = 'scheduled' if is_scheduled else 'published'
+
         for video in data['videos']:
             # Compara pelo caminho completo ou relativo
             if video['file_path'] in video_path or video_path.endswith(video['file_path']):
-                video['status'] = 'published'
+                video['status'] = status
                 video['youtube_url'] = youtube_url
-                video['published_at'] = datetime.now().strftime("%Y-%m-%d")
+                if is_scheduled:
+                    # Extrai apenas a data do ISO 8601 (ex: 2025-12-22T10:00:00-03:00 -> 2025-12-22)
+                    video['scheduled_at'] = scheduled_at[:10] if len(scheduled_at) >= 10 else scheduled_at
+                    video['published_at'] = None
+                else:
+                    video['published_at'] = datetime.now().strftime("%Y-%m-%d")
                 if has_thumbnail:
                     video['has_thumbnail'] = True
                 if title:
                     video['title'] = title
                 found = True
-                print(f"Status atualizado para: {video['id']}")
+                print(f"Status atualizado para: {video['id']} ({status})")
                 break
 
         if not found:
@@ -78,17 +88,17 @@ def update_video_status(video_file: str, youtube_url: str, title: str = None, ha
                 "id": video_name.lower()[:30],
                 "file_path": video_path,
                 "title": title or video_name,
-                "status": "published",
+                "status": status,
                 "has_thumbnail": has_thumbnail,
                 "has_transcription": False,
                 "has_description": True,
-                "published_at": datetime.now().strftime("%Y-%m-%d"),
-                "scheduled_at": None,
+                "published_at": None if is_scheduled else datetime.now().strftime("%Y-%m-%d"),
+                "scheduled_at": scheduled_at[:10] if is_scheduled and len(scheduled_at) >= 10 else scheduled_at,
                 "youtube_url": youtube_url,
                 "notes": "Adicionado automaticamente após upload"
             }
             data['videos'].append(new_video)
-            print(f"Novo vídeo adicionado ao tracking: {new_video['id']}")
+            print(f"Novo vídeo adicionado ao tracking: {new_video['id']} ({status})")
 
         data['last_updated'] = datetime.now().strftime("%Y-%m-%d")
 
@@ -160,7 +170,8 @@ def upload_video(
     tags: list[str] = None,
     category_id: str = '22',  # 22 = People & Blogs
     privacy_status: str = 'private',
-    thumbnail_path: str = None
+    thumbnail_path: str = None,
+    publish_at: str = None
 ):
     """
     Faz upload de um vídeo para o YouTube.
@@ -173,6 +184,7 @@ def upload_video(
         category_id: ID da categoria (22 = People & Blogs)
         privacy_status: 'public', 'private' ou 'unlisted'
         thumbnail_path: Caminho para a thumbnail (opcional)
+        publish_at: Data/hora para publicação agendada (formato ISO 8601, ex: 2024-12-22T10:00:00-03:00)
 
     Returns:
         dict: Resposta da API com informações do vídeo enviado
@@ -182,6 +194,17 @@ def upload_video(
 
     youtube = get_authenticated_service()
 
+    status_body = {
+        'privacyStatus': privacy_status,
+        'selfDeclaredMadeForKids': False
+    }
+
+    # Se há agendamento, configura publishAt e força private
+    if publish_at:
+        status_body['privacyStatus'] = 'private'
+        status_body['publishAt'] = publish_at
+        print(f"Agendado para: {publish_at}")
+
     body = {
         'snippet': {
             'title': title,
@@ -189,10 +212,7 @@ def upload_video(
             'tags': tags or [],
             'categoryId': category_id
         },
-        'status': {
-            'privacyStatus': privacy_status,
-            'selfDeclaredMadeForKids': False
-        }
+        'status': status_body
     }
 
     # Configura o upload com suporte a retomada
@@ -232,7 +252,8 @@ def upload_video(
         video_file=video_file,
         youtube_url=youtube_url,
         title=title,
-        has_thumbnail=bool(thumbnail_path)
+        has_thumbnail=bool(thumbnail_path),
+        scheduled_at=publish_at
     )
 
     return response
@@ -248,6 +269,7 @@ def main():
     parser.add_argument('--privacy', choices=['public', 'private', 'unlisted'],
                        default='private', help='Status de privacidade')
     parser.add_argument('--thumbnail', help='Caminho para a thumbnail')
+    parser.add_argument('--schedule', help='Agendar publicação (formato ISO 8601, ex: 2024-12-22T10:00:00-03:00)')
     parser.add_argument('--set-thumbnail', help='Atualizar thumbnail de vídeo existente (requer --video-id)')
     parser.add_argument('--video-id', help='ID do vídeo para atualizar thumbnail')
 
@@ -271,7 +293,8 @@ def main():
         tags=args.tags,
         category_id=args.category,
         privacy_status=args.privacy,
-        thumbnail_path=args.thumbnail
+        thumbnail_path=args.thumbnail,
+        publish_at=args.schedule
     )
 
 

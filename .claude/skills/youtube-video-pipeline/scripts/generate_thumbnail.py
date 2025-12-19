@@ -11,7 +11,6 @@ Requer: pip install google-genai pillow python-dotenv
 
 import sys
 import os
-import random
 from pathlib import Path
 from datetime import datetime
 
@@ -45,28 +44,84 @@ YOUTUBE_THUMB_HEIGHT = 720
 SKILL_DIR = Path(__file__).parent.parent
 DEFAULT_REFERENCE_IMAGE = SKILL_DIR / "assets" / "eduardo_reference.png"
 
-# Variações de poses e expressões para evitar thumbnails repetitivas
-POSE_VARIATIONS = [
-    "duas mãos apontando para o texto/título com expressão de surpresa",
-    "braços cruzados com sorriso confiante e olhar determinado",
-    "mão no queixo em pose pensativa, sobrancelha levantada",
-    "mãos na cabeça em expressão de 'mind blown'/surpresa extrema",
-    "polegar para cima com sorriso largo e olhos animados",
-    "dedos contando (mostrando número) com expressão explicativa",
-    "uma mão levantada em gesto de 'espera aí' com expressão séria",
-    "inclinado para frente apontando para câmera com olhar intenso",
-    "mãos abertas apresentando algo invisível com expressão de descoberta",
-    "uma mão apontando para cima com expressão de 'eureka'",
-]
+# Mapeamento de contextos para poses e expressões apropriadas
+# Cada contexto tem palavras-chave que ativam poses/expressões específicas
+CONTEXT_POSE_MAP = {
+    "automacao": {
+        "keywords": ["automatizei", "automatizar", "automação", "automático", "pipeline", "workflow", "agente", "bot"],
+        "pose": "mãos abertas apresentando algo invisível, como se mostrasse um sistema funcionando sozinho",
+        "expression": "confiante/orgulhoso (sorriso de satisfação, olhar determinado)"
+    },
+    "descoberta": {
+        "keywords": ["descobri", "revelado", "segredo", "encontrei", "achei", "novo"],
+        "pose": "uma mão apontando para cima com expressão de 'eureka'",
+        "expression": "surpreso/animado (olhos arregalados, sorriso de descoberta)"
+    },
+    "erro_problema": {
+        "keywords": ["erro", "bug", "problema", "falha", "quebrou", "não funciona", "cuidado"],
+        "pose": "mãos na cabeça em expressão de 'mind blown'/surpresa extrema",
+        "expression": "chocado/preocupado (boca aberta, sobrancelhas levantadas)"
+    },
+    "tutorial_ensino": {
+        "keywords": ["como", "tutorial", "aprenda", "passo a passo", "guia", "completo", "explicando"],
+        "pose": "dedos contando (mostrando número) ou apontando para texto explicativo",
+        "expression": "amigável/didático (sorriso acolhedor, olhar direto para câmera)"
+    },
+    "resultado_sucesso": {
+        "keywords": ["funciona", "consegui", "resultado", "sucesso", "pronto", "feito", "100%"],
+        "pose": "polegar para cima com sorriso largo e olhos animados",
+        "expression": "animado/vitorioso (sorriso largo, energia alta)"
+    },
+    "alerta_importante": {
+        "keywords": ["nunca", "sempre", "pare", "atenção", "importante", "urgente", "agora"],
+        "pose": "uma mão levantada em gesto de 'espera aí' ou apontando para câmera",
+        "expression": "sério/intenso (olhar firme, expressão de autoridade)"
+    },
+    "comparacao_analise": {
+        "keywords": ["vs", "versus", "melhor", "pior", "comparando", "qual", "diferença"],
+        "pose": "braços cruzados com postura analítica, cabeça levemente inclinada",
+        "expression": "pensativo/avaliador (sobrancelha levantada, expressão de análise)"
+    },
+    "ia_tech": {
+        "keywords": ["ia", "ai", "gpt", "claude", "gemini", "modelo", "llm", "inteligência artificial"],
+        "pose": "inclinado para frente com expressão de fascínio, como se olhasse algo impressionante",
+        "expression": "impressionado/fascinado (olhos brilhantes, expressão de admiração)"
+    }
+}
 
-EXPRESSION_VARIATIONS = [
-    "surpreso/chocado (boca levemente aberta, olhos arregalados)",
-    "confiante/determinado (sorriso de canto, olhar firme)",
-    "animado/empolgado (sorriso largo, energia alta, olhos brilhantes)",
-    "pensativo/curioso (sobrancelha levantada, leve sorriso)",
-    "impressionado (expressão de 'uau', sobrancelhas levantadas)",
-    "sério/profissional (expressão focada e determinada)",
-]
+# Fallback para quando nenhum contexto específico é detectado
+DEFAULT_POSE = "duas mãos apontando para o texto/título com expressão engajada"
+DEFAULT_EXPRESSION = "animado/empolgado (sorriso natural, olhar direto para câmera)"
+
+
+def select_pose_for_context(title: str, description: str) -> tuple[str, str]:
+    """
+    Seleciona pose e expressão baseadas no contexto do título e descrição.
+
+    Args:
+        title: Título do vídeo
+        description: Descrição do vídeo
+
+    Returns:
+        Tupla (pose, expression) mais apropriada para o contexto
+    """
+    text = f"{title} {description}".lower()
+
+    # Procura por contextos que combinem com o conteúdo
+    matched_contexts = []
+    for context_name, context_data in CONTEXT_POSE_MAP.items():
+        for keyword in context_data["keywords"]:
+            if keyword in text:
+                matched_contexts.append((context_name, context_data))
+                break
+
+    if matched_contexts:
+        # Se múltiplos contextos, prioriza o primeiro encontrado (mais específico)
+        # Poderia também combinar ou escolher o com mais keywords matches
+        best_match = matched_contexts[0][1]
+        return best_match["pose"], best_match["expression"]
+
+    return DEFAULT_POSE, DEFAULT_EXPRESSION
 
 
 def extract_power_words(title: str) -> str:
@@ -191,11 +246,10 @@ def generate_thumbnail(
                 types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
             )
 
-            # Selecionar pose e expressão aleatórias para variar as thumbnails
-            selected_pose = random.choice(POSE_VARIATIONS)
-            selected_expression = random.choice(EXPRESSION_VARIATIONS)
-            print(f"Pose selecionada: {selected_pose}")
-            print(f"Expressão selecionada: {selected_expression}")
+            # Selecionar pose e expressão baseadas no contexto do título/descrição
+            selected_pose, selected_expression = select_pose_for_context(title, description)
+            print(f"Pose selecionada (contextual): {selected_pose}")
+            print(f"Expressão selecionada (contextual): {selected_expression}")
 
             prompt = f"""REFERÊNCIA OBRIGATÓRIA: Use esta imagem como base para a APARÊNCIA da pessoa (rosto, tom de pele, cabelo).
 
