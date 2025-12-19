@@ -1,0 +1,142 @@
+{
+  "last_updated": "2025-12-19",
+  "videos": [
+    {
+      "id": "clip_01",
+      "file_path": "clips/01_Por_que_Claude_Code_é_MELHOR_que_Cursor_Copilot_e.mp4",
+      "title": "Por que Claude Code é MELHOR que Cursor, Copilot e...",
+      "status": "ready",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": ""
+    },
+    {
+      "id": "clip_02",
+      "file_path": "clips/02_PERIGO_Não_peça_isso_pra_IA_se_você_é_JuniorPleno.mp4",
+      "title": "PERIGO: Não peça isso pra IA se você é Junior/Pleno",
+      "status": "ready",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": ""
+    },
+    {
+      "id": "clip_03",
+      "file_path": "clips/03_Construa_o_SISTEMA_que_constrói_sistemas_Mentalida.mp4",
+      "title": "Construa o SISTEMA que constrói sistemas - Mentalidade",
+      "status": "published",
+      "has_thumbnail": true,
+      "has_transcription": true,
+      "has_description": true,
+      "published_at": "2025-12-19",
+      "scheduled_at": null,
+      "youtube_url": "https://youtu.be/0IKUJxYhPq8",
+      "notes": "Primeiro vídeo publicado"
+    },
+    {
+      "id": "clip_04",
+      "file_path": "clips/04_O_segredo_pra_IA_gerar_código_CERTO_Plan_Build_Tes.mp4",
+      "title": "O segredo pra IA gerar código CERTO - Plan Build Test",
+      "status": "ready",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": ""
+    },
+    {
+      "id": "clip_06",
+      "file_path": "clips/06_Como_automatizei_MEU_CANAL_com_IA_Projeto_Completo.mp4",
+      "title": "Como automatizei MEU CANAL com IA - Projeto Completo",
+      "status": "ready",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": ""
+    },
+    {
+      "id": "clip_08",
+      "file_path": "clips/08_Prompts_em_Português_ou_Inglês_A_verdade_sobre_mod.mp4",
+      "title": "Prompts em Português ou Inglês? A verdade sobre modelos",
+      "status": "ready",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": ""
+    },
+    {
+      "id": "clip_09",
+      "file_path": "clips/09_NÃO_limite_tokens_do_modelo_Opinião_polêmica.mp4",
+      "title": "NÃO limite tokens do modelo - Opinião polêmica",
+      "status": "ready",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": ""
+    },
+    {
+      "id": "clip_10",
+      "file_path": "clips/10_IA_gerou_esses_CLIPS_e_THUMBS_automaticamente_Resu.mp4",
+      "title": "IA gerou esses CLIPS e THUMBS automaticamente - Resultado",
+      "status": "ready",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": ""
+    },
+    {
+      "id": "video_agentic",
+      "file_path": "videos/agentic/Agentic.mp4",
+      "title": "Agentic",
+      "status": "draft",
+      "has_thumbnail": false,
+      "has_transcription": false,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": "Vídeo completo - não processado como clip"
+    },
+    {
+      "id": "video_agentic_1min",
+      "file_path": "videos/agentic_1min/Agentic_1min.mp4",
+      "title": "Agentic 1min",
+      "status": "ready",
+      "has_thumbnail": true,
+      "has_transcription": true,
+      "has_description": false,
+      "published_at": null,
+      "scheduled_at": null,
+      "youtube_url": null,
+      "notes": "Versão curta - tem thumb e transcrição prontos"
+    }
+  ],
+  "status_legend": {
+    "draft": "Vídeo bruto, sem processamento",
+    "processing": "Em processo de transcrição/thumbnail/descrição",
+    "ready": "Pronto para publicar (pode faltar alguns assets)",
+    "scheduled": "Agendado para publicação",
+    "published": "Já publicado no YouTube"
+  }
+}

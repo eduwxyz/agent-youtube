@@ -28,6 +28,43 @@ Analise o conteúdo/título do vídeo fornecido e crie uma descrição detalhada
 - Hierarquia visual clara (o que ver primeiro, segundo, terceiro)
 - Contraste figura-fundo para legibilidade
 
+### 4. IMPORTANTE: Variação da Pessoa (OBRIGATÓRIO)
+O layout geral pode se manter (pessoa à esquerda, texto à direita, fundo tech), mas a **POSE e EXPRESSÃO da pessoa DEVEM VARIAR** a cada thumbnail para evitar repetição.
+
+**Expressões Faciais (escolha uma diferente a cada vez):**
+- Surpreso/chocado (boca aberta, olhos arregalados)
+- Confiante/determinado (sorriso de canto, olhar firme)
+- Pensativo/curioso (mão no queixo, sobrancelha levantada)
+- Animado/empolgado (sorriso largo, energia alta)
+- Sério/profissional (expressão neutra focada)
+- "Mind blown" (mãos na cabeça, expressão de descoberta)
+
+**Poses e Gestos das Mãos (varie sempre):**
+- Duas mãos apontando para o texto
+- Mãos abertas apresentando algo (palmas para cima)
+- Braços cruzados (confiança)
+- Mão no queixo pensando
+- Polegar para cima (aprovação)
+- Dedos contando (para listas/números)
+- Mãos na cabeça (surpresa/descoberta)
+- Segurando objeto relacionado ao tema
+- Uma mão apontando, outra no bolso
+- Gesto de "espera aí" (mão levantada)
+
+**Ângulos do Corpo:**
+- Frontal levemente inclinado
+- Perfil parcial (3/4)
+- Inclinado para frente (engajamento)
+- Levemente recuado (visão geral)
+
+**Interação com Elementos Visuais:**
+- Olhando diretamente para câmera
+- Olhando para o elemento tech/IA do fundo
+- Olhando para o texto como se estivesse lendo
+- Interagindo com elemento flutuante (tocando, segurando)
+
+**REGRA:** A cada thumbnail, escolha ALEATORIAMENTE uma combinação diferente de expressão + gesto + ângulo. NUNCA repita a mesma pose (ex: apontando com uma mão e mostrando palma com outra).
+
 ## Formato de Resposta
 
 Para cada thumbnail, forneça:

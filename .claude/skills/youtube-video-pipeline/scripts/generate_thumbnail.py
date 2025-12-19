@@ -11,6 +11,7 @@ Requer: pip install google-genai pillow python-dotenv
 
 import sys
 import os
+import random
 from pathlib import Path
 from datetime import datetime
 
@@ -43,6 +44,29 @@ YOUTUBE_THUMB_HEIGHT = 720
 # Imagem de referência padrão do criador do canal
 SKILL_DIR = Path(__file__).parent.parent
 DEFAULT_REFERENCE_IMAGE = SKILL_DIR / "assets" / "eduardo_reference.png"
+
+# Variações de poses e expressões para evitar thumbnails repetitivas
+POSE_VARIATIONS = [
+    "duas mãos apontando para o texto/título com expressão de surpresa",
+    "braços cruzados com sorriso confiante e olhar determinado",
+    "mão no queixo em pose pensativa, sobrancelha levantada",
+    "mãos na cabeça em expressão de 'mind blown'/surpresa extrema",
+    "polegar para cima com sorriso largo e olhos animados",
+    "dedos contando (mostrando número) com expressão explicativa",
+    "uma mão levantada em gesto de 'espera aí' com expressão séria",
+    "inclinado para frente apontando para câmera com olhar intenso",
+    "mãos abertas apresentando algo invisível com expressão de descoberta",
+    "uma mão apontando para cima com expressão de 'eureka'",
+]
+
+EXPRESSION_VARIATIONS = [
+    "surpreso/chocado (boca levemente aberta, olhos arregalados)",
+    "confiante/determinado (sorriso de canto, olhar firme)",
+    "animado/empolgado (sorriso largo, energia alta, olhos brilhantes)",
+    "pensativo/curioso (sobrancelha levantada, leve sorriso)",
+    "impressionado (expressão de 'uau', sobrancelhas levantadas)",
+    "sério/profissional (expressão focada e determinada)",
+]
 
 
 def extract_power_words(title: str) -> str:
@@ -166,19 +190,30 @@ def generate_thumbnail(
             contents.append(
                 types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
             )
-            prompt = f"""REFERÊNCIA OBRIGATÓRIA: Use esta imagem como base EXATA para a pessoa.
+
+            # Selecionar pose e expressão aleatórias para variar as thumbnails
+            selected_pose = random.choice(POSE_VARIATIONS)
+            selected_expression = random.choice(EXPRESSION_VARIATIONS)
+            print(f"Pose selecionada: {selected_pose}")
+            print(f"Expressão selecionada: {selected_expression}")
+
+            prompt = f"""REFERÊNCIA OBRIGATÓRIA: Use esta imagem como base para a APARÊNCIA da pessoa (rosto, tom de pele, cabelo).
 
 INSTRUÇÕES CRÍTICAS:
-- COPIE EXATAMENTE a pose da pessoa (uma mão apontando para o lado, outra mão aberta segurando elemento holográfico)
-- MANTENHA o rosto IDÊNTICO (formato do rosto, nariz, olhos, sobrancelhas, tom de pele moreno)
-- REMOVA OS ÓCULOS - a pessoa NÃO usa óculos
-- MANTENHA a expressão facial (sorriso confiante, olhos expressivos)
-- MANTENHA a roupa (camiseta preta)
-- MANTENHA o estilo visual (fundo azul escuro com circuitos tech, texto amarelo grande)
-- MANTENHA a composição (pessoa à esquerda, texto à direita)
+- ROSTO: MANTENHA o rosto IDÊNTICO à referência (formato do rosto, nariz, olhos, sobrancelhas, tom de pele moreno, cabelo curto cacheado)
+- ÓCULOS: REMOVA OS ÓCULOS - a pessoa NÃO usa óculos
+- ROUPA: MANTENHA a camiseta preta
+- ESTILO VISUAL: MANTENHA o fundo azul escuro com circuitos tech, texto amarelo grande
+- COMPOSIÇÃO: MANTENHA pessoa à esquerda, texto à direita
 
-Estilo: foto realista profissional com elementos gráficos (como a referência)
-NÃO faça cartoon/ilustração - mantenha o estilo FOTOREALISTA da referência.
+POSE E EXPRESSÃO (DIFERENTE DA REFERÊNCIA):
+- POSE: {selected_pose}
+- EXPRESSÃO FACIAL: {selected_expression}
+
+IMPORTANTE: A pose e expressão devem ser DIFERENTES da imagem de referência. Use a referência apenas para manter a identidade visual da pessoa (rosto, tom de pele, cabelo), mas MUDE a pose e expressão conforme especificado acima.
+
+Estilo: foto realista profissional com elementos gráficos
+NÃO faça cartoon/ilustração - mantenha o estilo FOTOREALISTA.
 
 {prompt}"""
         else:

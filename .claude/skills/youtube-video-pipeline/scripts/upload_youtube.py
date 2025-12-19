@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 """
 Script para upload de vídeos no YouTube usando a API v3.
+Atualiza automaticamente o videos_status.json após upload.
 """
 
 import argparse
+import json
 import os
+import sys
+from datetime import datetime
 from pathlib import Path
 
 from google.oauth2.credentials import Credentials
+
+# Adiciona o diretório do video-manager ao path
+VIDEO_MANAGER_PATH = Path(__file__).parent.parent.parent / 'video-manager' / 'scripts'
+sys.path.insert(0, str(VIDEO_MANAGER_PATH))
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
@@ -22,6 +30,75 @@ SCOPES = [
 # Arquivo de credenciais OAuth
 CLIENT_SECRETS_FILE = 'client_secret_851594216922-jr9e7d1eaocgpn0mtamsldmmsq7ga5nl.apps.googleusercontent.com.json'
 TOKEN_FILE = 'token.json'
+
+# Arquivo de status dos vídeos
+STATUS_FILE = Path(__file__).parent.parent.parent.parent.parent / 'videos_status.json'
+
+
+def update_video_status(video_file: str, youtube_url: str, title: str = None, has_thumbnail: bool = False):
+    """
+    Atualiza o status do vídeo no videos_status.json após upload.
+
+    Args:
+        video_file: Caminho do arquivo de vídeo
+        youtube_url: URL do vídeo no YouTube
+        title: Título do vídeo (opcional)
+        has_thumbnail: Se thumbnail foi enviada
+    """
+    if not STATUS_FILE.exists():
+        print(f"Aviso: Arquivo de status não encontrado: {STATUS_FILE}")
+        return
+
+    try:
+        with open(STATUS_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Procura o vídeo pelo caminho
+        video_path = str(video_file)
+        found = False
+
+        for video in data['videos']:
+            # Compara pelo caminho completo ou relativo
+            if video['file_path'] in video_path or video_path.endswith(video['file_path']):
+                video['status'] = 'published'
+                video['youtube_url'] = youtube_url
+                video['published_at'] = datetime.now().strftime("%Y-%m-%d")
+                if has_thumbnail:
+                    video['has_thumbnail'] = True
+                if title:
+                    video['title'] = title
+                found = True
+                print(f"Status atualizado para: {video['id']}")
+                break
+
+        if not found:
+            # Adiciona novo registro se não encontrou
+            video_name = Path(video_file).stem
+            new_video = {
+                "id": video_name.lower()[:30],
+                "file_path": video_path,
+                "title": title or video_name,
+                "status": "published",
+                "has_thumbnail": has_thumbnail,
+                "has_transcription": False,
+                "has_description": True,
+                "published_at": datetime.now().strftime("%Y-%m-%d"),
+                "scheduled_at": None,
+                "youtube_url": youtube_url,
+                "notes": "Adicionado automaticamente após upload"
+            }
+            data['videos'].append(new_video)
+            print(f"Novo vídeo adicionado ao tracking: {new_video['id']}")
+
+        data['last_updated'] = datetime.now().strftime("%Y-%m-%d")
+
+        with open(STATUS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+        print(f"videos_status.json atualizado!")
+
+    except Exception as e:
+        print(f"Aviso: Erro ao atualizar status: {e}")
 
 
 def get_authenticated_service():
@@ -141,13 +218,22 @@ def upload_video(
             print(f"Upload: {int(status.progress() * 100)}%")
 
     video_id = response['id']
+    youtube_url = f"https://www.youtube.com/watch?v={video_id}"
     print(f"\nUpload concluído!")
     print(f"ID do vídeo: {video_id}")
-    print(f"URL: https://www.youtube.com/watch?v={video_id}")
+    print(f"URL: {youtube_url}")
 
     # Upload thumbnail se fornecida
     if thumbnail_path:
         upload_thumbnail(video_id, thumbnail_path)
+
+    # Atualiza o status no videos_status.json
+    update_video_status(
+        video_file=video_file,
+        youtube_url=youtube_url,
+        title=title,
+        has_thumbnail=bool(thumbnail_path)
+    )
 
     return response
 

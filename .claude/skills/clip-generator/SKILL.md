@@ -100,10 +100,27 @@ Gera clips no diretório `clips/` com nomes baseados nos títulos sugeridos.
 }
 ```
 
+## Integração com Video Manager
+
+Após extrair os clips, **adicione cada um ao tracking** para gerenciar o status de publicação:
+
+```bash
+# Para cada clip gerado
+python .claude/skills/video-manager/scripts/video_status.py add \
+  --file "clips/<nome_clip>.mp4" \
+  --title "<titulo_sugerido>" \
+  --status draft
+
+# Ver clips pendentes
+python .claude/skills/video-manager/scripts/video_status.py list --status draft
+```
+
+O upload via `youtube-video-pipeline` atualizará automaticamente o status para `published`.
+
 ## Fluxo Resumido
 
 ```
-MP4 → Transcrição (com timestamps) → Análise IA → JSON → Extração clips
+MP4 → Transcrição (com timestamps) → Análise IA → JSON → Extração clips → Adicionar ao tracking
 ```
 
 ## Extração Manual

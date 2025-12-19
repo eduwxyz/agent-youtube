@@ -138,6 +138,23 @@ python .claude/skills/youtube-video-pipeline/scripts/upload_youtube.py <video>.m
 
 Na primeira execução, abre navegador para autenticação OAuth.
 
+## Integração com Video Manager
+
+O script `upload_youtube.py` **atualiza automaticamente** o arquivo `videos_status.json` após cada upload:
+
+- Define status como `published`
+- Registra a URL do YouTube
+- Marca data de publicação
+- Atualiza flag de thumbnail
+
+Se o vídeo não existir no tracking, será adicionado automaticamente.
+
+Para verificar o status após upload:
+
+```bash
+python .claude/skills/video-manager/scripts/video_status.py summary
+```
+
 ## Output Final
 
 Apresentar ao usuário:
@@ -152,6 +169,8 @@ Apresentar ao usuário:
 3. **Descrição completa** pronta para copiar
 
 4. **Link do vídeo** no YouTube (se upload realizado)
+
+5. **Status atualizado** no `videos_status.json`
 
 ## Fluxo Resumido
 
