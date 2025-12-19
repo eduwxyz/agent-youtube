@@ -9,10 +9,24 @@ Pipeline automatizado para transformar um arquivo MP4 em um vídeo publicado no 
 
 ## Dependências
 
-- **ffmpeg**: `brew install ffmpeg`
+- **ffmpeg**: `brew install ffmpeg` (macOS) ou `sudo pacman -S ffmpeg` (Arch Linux)
 - **NeMo ASR**: `pip install nemo_toolkit[asr]`
 - **Google GenAI**: `pip install google-genai pillow python-dotenv`
 - **YouTube API**: `pip install google-auth-oauthlib google-api-python-client`
+
+## Ambiente Virtual (venv) no Linux
+
+No Linux, existe um venv configurado na raiz do projeto. **Sempre ative o venv antes de executar os scripts Python:**
+
+```bash
+# Ativar o venv (executar uma vez por sessão)
+source venv/bin/activate
+
+# Ou usar o caminho completo do Python do venv
+./venv/bin/python scripts/nome_do_script.py
+```
+
+**IMPORTANTE:** Todos os comandos `python` nos exemplos abaixo devem ser executados com o venv ativado ou usando `./venv/bin/python` no Linux.
 
 ## Variáveis de Ambiente
 
@@ -34,7 +48,11 @@ Dado um caminho para `<video>.mp4`, executar os passos na ordem:
 ### Passo 1: Extrair Áudio
 
 ```bash
-python scripts/extract_audio.py <video>.mp4
+# Linux (com venv):
+./venv/bin/python .claude/skills/youtube-video-pipeline/scripts/extract_audio.py <video>.mp4
+
+# macOS:
+python .claude/skills/youtube-video-pipeline/scripts/extract_audio.py <video>.mp4
 ```
 
 Gera `<video>.mp3` no mesmo diretório.
@@ -42,7 +60,11 @@ Gera `<video>.mp3` no mesmo diretório.
 ### Passo 2: Transcrever Áudio
 
 ```bash
-python scripts/transcribe_audio.py <video>.mp3 -o <video>_transcricao.txt -l
+# Linux (com venv):
+./venv/bin/python .claude/skills/youtube-video-pipeline/scripts/transcribe_audio.py <video>.mp3 -o <video>_transcricao.txt -l
+
+# macOS:
+python .claude/skills/youtube-video-pipeline/scripts/transcribe_audio.py <video>.mp3 -o <video>_transcricao.txt -l
 ```
 
 - Use `-l` para vídeos longos (mais de 24 minutos)
@@ -86,7 +108,11 @@ Com base na transcrição, gerar descrição otimizada para SEO.
 ### Passo 5: Gerar Thumbnail
 
 ```bash
-python scripts/generate_thumbnail.py "<título>" -d "<descrição curta>" -o <video>_thumb.png
+# Linux (com venv):
+./venv/bin/python .claude/skills/youtube-video-pipeline/scripts/generate_thumbnail.py "<título>" -d "<descrição curta>" -o <video>_thumb.png
+
+# macOS:
+python .claude/skills/youtube-video-pipeline/scripts/generate_thumbnail.py "<título>" -d "<descrição curta>" -o <video>_thumb.png
 ```
 
 Opções adicionais:
@@ -96,7 +122,11 @@ Opções adicionais:
 ### Passo 6: Upload para YouTube
 
 ```bash
-python scripts/upload_youtube.py <video>.mp4 -t "<título>" -d "<descrição>" --tags tag1 tag2 --privacy private
+# Linux (com venv):
+./venv/bin/python .claude/skills/youtube-video-pipeline/scripts/upload_youtube.py <video>.mp4 -t "<título>" -d "<descrição>" --tags tag1 tag2 --privacy private
+
+# macOS:
+python .claude/skills/youtube-video-pipeline/scripts/upload_youtube.py <video>.mp4 -t "<título>" -d "<descrição>" --tags tag1 tag2 --privacy private
 ```
 
 **Parâmetros:**

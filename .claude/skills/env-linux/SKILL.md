@@ -26,6 +26,19 @@ Para múltiplos comandos, abra uma sessão:
 ssh linux
 ```
 
+## Ambiente Virtual (venv)
+
+O projeto possui um venv configurado em `./venv`. Use-o para executar scripts Python:
+
+```bash
+# Usar Python do venv diretamente:
+./venv/bin/python script.py
+
+# Ou ativar o venv:
+source venv/bin/activate
+python script.py
+```
+
 ## Casos de uso
 
 - Pipeline de transcrição com NVIDIA Parakeet (GPU)

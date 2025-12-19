@@ -40,6 +40,10 @@ except ImportError:
 YOUTUBE_THUMB_WIDTH = 1280
 YOUTUBE_THUMB_HEIGHT = 720
 
+# Imagem de referência padrão do criador do canal
+SKILL_DIR = Path(__file__).parent.parent
+DEFAULT_REFERENCE_IMAGE = SKILL_DIR / "assets" / "eduardo_reference.png"
+
 
 def extract_power_words(title: str) -> str:
     """
@@ -112,12 +116,18 @@ def generate_thumbnail(
         title: Título do vídeo
         description: Descrição do vídeo
         output_path: Caminho para salvar a thumbnail (opcional)
-        reference_image: Caminho para imagem de referência (para consistência de rosto)
+        reference_image: Caminho para imagem de referência (para consistência de rosto).
+                        Se não fornecido, usa a referência padrão em assets/eduardo_reference.png
         api_key: API key do Google AI (ou usar GOOGLE_API_KEY env var)
 
     Returns:
         Caminho do arquivo de thumbnail gerado
     """
+    # Usar referência padrão se não fornecida e existir
+    if reference_image is None and DEFAULT_REFERENCE_IMAGE.exists():
+        reference_image = str(DEFAULT_REFERENCE_IMAGE)
+        print(f"Usando referência padrão: {reference_image}")
+
     # Configurar API key
     api_key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:

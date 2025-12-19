@@ -19,10 +19,16 @@ Gere uma thumbnail viral otimizada para YouTube com base no título fornecido.
 
 ## Sua tarefa:
 
-Execute o script `generate_thumbnail.py` para gerar a thumbnail:
+Execute o script `generate_thumbnail.py` para gerar a thumbnail.
 
+**No Linux**, use o venv existente:
 ```bash
-python generate_thumbnail.py "$ARGUMENTS.titulo" -d "$ARGUMENTS.descricao" -r "thumbnail_sem_oculos.png"
+./venv/bin/python .claude/skills/youtube-video-pipeline/scripts/generate_thumbnail.py "$ARGUMENTS.titulo" -d "$ARGUMENTS.descricao" -r "thumbnail_sem_oculos.png"
+```
+
+**No macOS**:
+```bash
+python .claude/skills/youtube-video-pipeline/scripts/generate_thumbnail.py "$ARGUMENTS.titulo" -d "$ARGUMENTS.descricao" -r "thumbnail_sem_oculos.png"
 ```
 
 Ajuste os parâmetros conforme necessário:
