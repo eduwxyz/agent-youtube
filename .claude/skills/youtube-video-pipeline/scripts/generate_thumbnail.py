@@ -41,6 +41,7 @@ YOUTUBE_THUMB_WIDTH = 1280
 YOUTUBE_THUMB_HEIGHT = 720
 
 # Imagem de referência padrão do criador do canal
+# ⚠️ PERSONALIZAR: Coloque sua imagem de referência na pasta assets ou na raiz do projeto
 SKILL_DIR = Path(__file__).parent.parent
 DEFAULT_REFERENCE_IMAGE = SKILL_DIR / "assets" / "eduardo_reference.png"
 

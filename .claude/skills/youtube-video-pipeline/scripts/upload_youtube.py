@@ -163,6 +163,31 @@ def upload_thumbnail(video_id: str, thumbnail_path: str):
     return response
 
 
+def build_description_with_live_info(description: str, live_url: str) -> str:
+    """
+    Adiciona informações sobre a live original na descrição.
+
+    Args:
+        description: Descrição original do vídeo
+        live_url: URL da live original no YouTube
+
+    Returns:
+        str: Descrição com informações da live adicionadas
+    """
+    live_section = f"""
+---
+🤖 **Este vídeo foi gerado e postado automaticamente!**
+
+Este clip foi extraído e publicado de forma 100% automática a partir de uma live usando IA.
+O agente identificou os melhores momentos, gerou título, descrição e thumbnail, e fez o upload — tudo sem intervenção humana.
+
+🎬 **Assista a live completa:** {live_url}
+
+---
+"""
+    return description + "\n" + live_section
+
+
 def upload_video(
     video_file: str,
     title: str,
@@ -171,7 +196,8 @@ def upload_video(
     category_id: str = '22',  # 22 = People & Blogs
     privacy_status: str = 'private',
     thumbnail_path: str = None,
-    publish_at: str = None
+    publish_at: str = None,
+    from_live: str = None
 ):
     """
     Faz upload de um vídeo para o YouTube.
@@ -185,6 +211,7 @@ def upload_video(
         privacy_status: 'public', 'private' ou 'unlisted'
         thumbnail_path: Caminho para a thumbnail (opcional)
         publish_at: Data/hora para publicação agendada (formato ISO 8601, ex: 2024-12-22T10:00:00-03:00)
+        from_live: URL da live original (se o vídeo foi gerado a partir de um clip de live)
 
     Returns:
         dict: Resposta da API com informações do vídeo enviado
@@ -193,6 +220,12 @@ def upload_video(
         raise FileNotFoundError(f"Arquivo não encontrado: {video_file}")
 
     youtube = get_authenticated_service()
+
+    # Adiciona informações da live na descrição se for um clip
+    final_description = description
+    if from_live:
+        final_description = build_description_with_live_info(description, from_live)
+        print(f"Clip de live detectado: {from_live}")
 
     status_body = {
         'privacyStatus': privacy_status,
@@ -208,7 +241,7 @@ def upload_video(
     body = {
         'snippet': {
             'title': title,
-            'description': description,
+            'description': final_description,
             'tags': tags or [],
             'categoryId': category_id
         },
@@ -270,6 +303,7 @@ def main():
                        default='private', help='Status de privacidade')
     parser.add_argument('--thumbnail', help='Caminho para a thumbnail')
     parser.add_argument('--schedule', help='Agendar publicação (formato ISO 8601, ex: 2024-12-22T10:00:00-03:00)')
+    parser.add_argument('--from-live', help='URL da live original (para clips gerados automaticamente)')
     parser.add_argument('--set-thumbnail', help='Atualizar thumbnail de vídeo existente (requer --video-id)')
     parser.add_argument('--video-id', help='ID do vídeo para atualizar thumbnail')
 
@@ -294,7 +328,8 @@ def main():
         category_id=args.category,
         privacy_status=args.privacy,
         thumbnail_path=args.thumbnail,
-        publish_at=args.schedule
+        publish_at=args.schedule,
+        from_live=getattr(args, 'from_live', None)
     )
 
 

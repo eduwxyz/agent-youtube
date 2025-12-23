@@ -1,6 +1,6 @@
 ---
 name: youtube-video-pipeline
-description: "Pipeline completo para publicar vídeos no YouTube a partir de um arquivo MP4. Use quando o usuário fornecer um caminho para um vídeo MP4 e quiser fazer o fluxo completo de publicação. O pipeline executa: (1) Extrair áudio MP3, (2) Transcrever com NVIDIA Parakeet, (3) Gerar título otimizado, (4) Gerar descrição SEO, (5) Gerar thumbnail viral com IA, (6) Upload para YouTube."
+description: "Pipeline completo para publicar vídeos no YouTube a partir de um arquivo MP4. Use quando o usuário fornecer um caminho para um vídeo MP4 e quiser fazer o fluxo completo de publicação. O pipeline executa: (1) Extrair áudio MP3, (2) Transcrever com NVIDIA Parakeet, (3) Gerar título otimizado, (4) Gerar descrição SEO, (5) Gerar thumbnail viral com IA, (6) Upload para YouTube. Suporta clips de lives com --from-live para adicionar créditos automáticos."
 ---
 
 # YouTube Video Pipeline
@@ -135,6 +135,23 @@ python .claude/skills/youtube-video-pipeline/scripts/upload_youtube.py <video>.m
 - `--tags`: Lista de tags separadas por espaço
 - `--category`: ID da categoria (padrão: 22 = People & Blogs)
 - `--privacy`: `public`, `private` ou `unlisted` (padrão: private)
+- `--from-live <url>`: URL da live original (para clips gerados automaticamente)
+
+**Parâmetro `--from-live`:**
+
+Quando o vídeo é um clip gerado automaticamente a partir de uma live, use este parâmetro com a URL da live original. O script irá adicionar automaticamente na descrição:
+
+- Aviso de que o vídeo foi gerado e postado por IA
+- Explicação de que o clip foi extraído automaticamente
+- Link para a live completa
+
+Exemplo:
+```bash
+python .claude/skills/youtube-video-pipeline/scripts/upload_youtube.py clip.mp4 \
+  -t "Título do Clip" \
+  -d "Descrição gerada..." \
+  --from-live "https://www.youtube.com/watch?v=ABC123"
+```
 
 Na primeira execução, abre navegador para autenticação OAuth.
 

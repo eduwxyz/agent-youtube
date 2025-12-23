@@ -31,6 +31,7 @@ Com base no conteúdo, gere uma descrição otimizada para YouTube seguindo esta
 ### 4. Links e recursos
 - Seção para links mencionados no vídeo
 - **OBRIGATÓRIO** - Sempre incluir as redes sociais do criador:
+  <!-- ⚠️ PERSONALIZAR: Substitua pelos seus links de redes sociais -->
   - LinkedIn: https://www.linkedin.com/in/eduardo-machado-141835192/
   - GitHub: https://github.com/eduwxyz
 

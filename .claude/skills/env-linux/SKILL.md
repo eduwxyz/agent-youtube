@@ -5,6 +5,18 @@ description: Acesso remoto ao PC Linux via SSH para tarefas que exigem mais pode
 
 # Ambiente Linux Remoto
 
+> **Nota:** Esta skill é OPCIONAL. Só é necessária se você tem uma máquina Linux remota com GPU para processamento pesado. Se não tiver, execute a transcrição localmente ou use um serviço em nuvem.
+
+## Configuração Inicial
+
+Antes de usar, configure o acesso SSH no seu `~/.ssh/config`:
+
+```
+Host linux
+    HostName seu-servidor-ou-ip
+    User seu-usuario
+```
+
 ## Acesso SSH
 
 Para executar comandos no Linux:

@@ -20,12 +20,22 @@ venv/
 
 # Arquivos de mídia (grandes)
 videos/
+clips/
 *.mp4
 *.mp3
 *.wav
 *.png
 *.jpg
 *.jpeg
+*.srt
+
+# Arquivos gerados pelo pipeline
+videos_status.json
+clips*.json
+
+# Imagem de referência pessoal (cada usuário adiciona a sua)
+# Descomente a linha abaixo se quiser ignorar sua imagem de referência
+# sua_imagem_referencia.png
 
 # IDE
 .idea/

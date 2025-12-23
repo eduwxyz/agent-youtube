@@ -15,6 +15,7 @@ Gere uma thumbnail viral otimizada para YouTube com base no título fornecido.
 
 **Descrição:** $ARGUMENTS.descricao
 
+<!-- ⚠️ PERSONALIZAR: Substitua pelo nome da sua imagem de referência -->
 **Imagem de referência para o rosto:** Sempre use `thumbnail_sem_oculos.png` (localizada na raiz do projeto)
 
 ## Sua tarefa:

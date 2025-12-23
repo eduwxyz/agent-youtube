@@ -24,7 +24,7 @@ MP4 → MP3 → Transcrição → Título + Descrição → Thumbnail → YouTub
 - Descrições otimizadas para SEO com CTAs e hashtags
 - Thumbnails virais geradas por IA (estilo MrBeast/MKBHD)
 - Upload direto para YouTube com metadata completa
-- Análise de vídeos longos para identificar cortes potenciais
+- Geração automática de clips a partir de vídeos longos/lives
 - Suporte a vídeos de até 3 horas
 
 ## Pré-requisitos
@@ -121,16 +121,52 @@ Para fazer upload de vídeos, você precisa configurar OAuth2 do Google:
 
 Na primeira execução do upload, um navegador abrirá para autenticação. Após autorizar, um arquivo `token.json` será criado automaticamente.
 
-### 3. (Opcional) Configure acesso SSH para processamento remoto
+---
 
-Se você tem uma máquina Linux com GPU para transcrição:
+## Personalizações Necessárias
 
-```bash
-# Configure o alias 'linux' no seu ~/.ssh/config
-Host linux
-    HostName seu-servidor
-    User seu-usuario
-```
+> **Nota:** Os arquivos já contêm configurações funcionais. Procure por comentários com `⚠️ PERSONALIZAR` para encontrar o que precisa ser alterado.
+
+Este projeto contém algumas configurações que você precisa ajustar para seu uso:
+
+### 1. Links das Redes Sociais (Obrigatório)
+
+Edite `.claude/commands/generate_description.md` e substitua os links de LinkedIn/GitHub pelos seus.
+
+### 2. Imagem de Referência para Thumbnails (Obrigatório)
+
+O script de geração de thumbnails usa uma imagem de referência do rosto para manter consistência visual.
+
+**O que fazer:**
+1. Adicione uma foto sua (rosto bem visível, boa qualidade) na raiz do projeto ou em `.claude/skills/youtube-video-pipeline/assets/`
+2. Edite `.claude/commands/generate_thumb.md` e altere o nome do arquivo
+3. Edite `.claude/skills/youtube-video-pipeline/scripts/generate_thumbnail.py` (linha 46) se usar o caminho em assets
+
+### 3. Caminhos do Projeto (Se usar Linux remoto)
+
+Se você usa uma máquina Linux remota para transcrição, edite os caminhos em:
+- `.claude/commands/generate-clips.md`
+- `.claude/skills/clip-generator/SKILL.md`
+
+### 4. Ambiente Linux Remoto (Opcional)
+
+Se você tem uma máquina Linux com GPU:
+
+1. Configure o acesso SSH no seu `~/.ssh/config`:
+   ```
+   Host linux
+       HostName seu-servidor-ou-ip
+       User seu-usuario
+   ```
+2. Clone o projeto também na máquina Linux
+3. Crie um venv e instale as dependências lá
+
+**Se você NÃO tem uma máquina Linux remota:**
+- Ignore a skill `env-linux` e o comando `/generate-clips`
+- Execute a transcrição localmente (requer GPU NVIDIA com 8GB+ VRAM)
+- Ou use um serviço de transcrição em nuvem
+
+---
 
 ## Uso
 
@@ -148,6 +184,11 @@ Dentro do Claude Code, você pode:
 **Pipeline completo:**
 ```
 Publique o vídeo /caminho/para/video.mp4 no YouTube
+```
+
+**Gerar clips de uma live/vídeo longo:**
+```
+/generate-clips https://www.youtube.com/watch?v=VIDEO_ID
 ```
 
 **Comandos individuais:**
@@ -187,7 +228,7 @@ python .claude/skills/youtube-video-pipeline/scripts/transcribe_audio.py video.m
 ```bash
 python .claude/skills/youtube-video-pipeline/scripts/generate_thumbnail.py "Título do Vídeo" \
     -d "Descrição curta do conteúdo" \
-    -r imagem_referencia.jpg \
+    -r sua_imagem_referencia.jpg \
     -o thumbnail.png
 ```
 
@@ -208,6 +249,7 @@ python .claude/skills/youtube-video-pipeline/scripts/upload_youtube.py video.mp4
 - `--category` - ID da categoria (padrão: 22 = People & Blogs)
 - `--privacy` - `public`, `private` ou `unlisted` (padrão: private)
 - `--thumbnail` - Caminho para a thumbnail
+- `--from-live` - URL da live original (para clips automáticos)
 
 ## Comandos Slash Disponíveis
 
@@ -217,6 +259,8 @@ python .claude/skills/youtube-video-pipeline/scripts/upload_youtube.py video.mp4
 | `/generate_description <arquivo>` | Gera descrição SEO a partir da transcrição |
 | `/generate_thumb <título>` | Gera thumbnail viral com IA |
 | `/analyze_clips <arquivo>` | Identifica melhores momentos para cortes |
+| `/generate-clips <url>` | Pipeline completo de geração de clips |
+| `/download-video <url>` | Baixa vídeo do YouTube |
 | `/question <pergunta>` | Responde perguntas sobre o projeto |
 
 ## Estrutura do Projeto
@@ -226,23 +270,29 @@ agent-youtube/
 ├── .claude/
 │   ├── commands/                    # Comandos slash customizados
 │   │   ├── generate_title.md
-│   │   ├── generate_description.md
-│   │   ├── generate_thumb.md
+│   │   ├── generate_description.md  # ⚠️ Editar: seus links de redes sociais
+│   │   ├── generate_thumb.md        # ⚠️ Editar: sua imagem de referência
 │   │   ├── analyze_clips.md
+│   │   ├── generate-clips.md
+│   │   ├── download-video.md
 │   │   └── question.md
 │   └── skills/
 │       ├── youtube-video-pipeline/  # Skill principal
-│       │   ├── SKILL.md             # Documentação da skill
-│       │   ├── references/          # Prompts e referências
-│       │   └── scripts/             # Scripts Python
+│       │   ├── SKILL.md
+│       │   ├── references/
+│       │   └── scripts/
 │       │       ├── extract_audio.py
 │       │       ├── transcribe_audio.py
 │       │       ├── generate_thumbnail.py
-│       │       └── upload_youtube.py
-│       ├── env-linux/               # Acesso SSH remoto
+│       │       ├── upload_youtube.py
+│       │       └── extract_clip.py
+│       ├── clip-generator/          # Geração automática de clips
+│       ├── video-manager/           # Gerenciamento de status dos vídeos
+│       ├── env-linux/               # Acesso SSH remoto (opcional)
 │       └── skill-creator/           # Utilitário para criar skills
 ├── .env.example                     # Exemplo de variáveis de ambiente
 ├── requirements.txt                 # Dependências Python
+├── videos_status.json               # Tracking de status dos vídeos
 └── README.md
 ```
 
